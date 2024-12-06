@@ -8,11 +8,14 @@ version = "0.1.0"
 dependencies = [
     "paho-mqtt",
     "python-dotenv",
+    "anyio",
+    "PyYAML",
+    "pydantic"
 ]
 
 [tool.setuptools]
 package-dir = {"" = "."}
-packages = ["src", "."]
+packages = {find = {where = [".", "src"], exclude = ["tests*"]}}
 
 [tool.pytest.ini_options]
 addopts = "-v"

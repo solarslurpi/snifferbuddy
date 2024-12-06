@@ -1,5 +1,5 @@
 # Use a specific Python version
-FROM dtcooper/raspberrypi-os:python3.12
+FROM dtcooper/raspberrypi-os:python3.12-bookworm
 
 # Set the working directory in the container
 WORKDIR /usr/app
@@ -11,23 +11,25 @@ RUN apt-get update && \
     export PATH="$HOME/.cargo/bin:$PATH" && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file and install Python dependencies
-COPY requirements.txt ./
-RUN . "/root/.cargo/env" && pip install --no-cache-dir -r requirements.txt
+# Copy the project files
+COPY pyproject.toml ./
+COPY src/ /usr/app/src
+COPY app.py /usr/app/
+COPY config.py ./
+COPY config.yaml ./
+# Install the project and dependencies
+RUN . "/root/.cargo/env" && pip install .
 
 # Create non-root user
 RUN useradd -m -s /bin/bash appuser && \
     chown -R appuser:appuser /usr/app
 
-# Copy the source code
-COPY src/ /usr/app/src
-COPY app.py /usr/app/
+    # Install the package in development mode
+RUN pip install -e .
 
-# Set environment variables for the application
-ENV PYTHONPATH=/usr/app
 
 # Switch to non-root user
 USER appuser
 
 # Define the default command to run the application
-CMD ["python", "-m", "app.py"]
+CMD ["python", "app.py"] 

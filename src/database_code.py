@@ -2,6 +2,7 @@
 """
 from dotenv import load_dotenv
 import os
+from pathlib import Path
 import sqlite3
 import logging
 
@@ -12,12 +13,15 @@ from src.logging_config import setup_logging
 load_dotenv()
 setup_logging()
 logger = logging.getLogger(__name__)
-db_path = os.getenv("DB_PATH")
 
 class SensorDatabase:
-    def __init__(self, config: AppConfig, receive_stream: MemoryObjectReceiveStream, db_path: str = db_path):
+    def __init__(self, config: AppConfig, receive_stream: MemoryObjectReceiveStream):
         """Initialize the database connection and receive stream."""
-        self.db_path = db_path
+        self.db_path = config.database_path
+        # Extract the directory path without the filename
+        db_directory = os.path.dirname(self.db_path)
+        # Create all necessary parent directories
+        Path(db_directory).mkdir(parents=True, exist_ok=True)
         self.receive_stream = receive_stream
         self.light_threshold = config.mqtt.light_threshold
         self._create_table_if_not_exists()

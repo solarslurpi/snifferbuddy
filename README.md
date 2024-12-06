@@ -270,12 +270,5 @@ Starting at the `main()` function:
    :members: main
 
 ```
-
-
-```{eval-rst}
-.. autofunction:: growbuddies.CircuitPython.src.code.load_config
-.. autofunction:: growbuddies.CircuitPython.src.code.connect_wifi
-.. autofunction:: growbuddies.CircuitPython.src.code.connect_mqtt
-.. autofunction:: growbuddies.CircuitPython.src.code.read_and_mqtt_scd4x_data
-.. autofunction:: growbuddies.CircuitPython.src.code.process_light_info
+on:: growbuddies.CircuitPython.src.code.process_light_info
 ```

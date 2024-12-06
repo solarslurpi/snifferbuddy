@@ -84,3 +84,13 @@ The configuration is divided into two main sections:
 - **`database_path`**: The file path to the SQLite database where sensor readings will be stored. This path can be absolute or relative, and it defaults to a hidden directory in the user's home folder: `"~/.sensor_monitor/readings.db"`.
 ### How to Use
 1. **Edit `config.yaml`**: Open the `config.yaml` file in a text editor and modify the values as needed to match your environment and requirements.
+
+## Docker
+
+```
+docker build -t solarslurpie/snifferbuddy:latest .
+```
+
+```bash
+docker run -v $(pwd)/config.yaml:/usr/app/config.yaml --name snifferbuddy -d  --restart always solarslurpie/snifferbuddy:latest
+```

@@ -21,6 +21,7 @@ class SensorMonitor:
         self.send_stream, self.receive_stream = anyio.create_memory_object_stream(100)
         self._latest_reading = None
         self._reading_event = Event()
+        self.mqtt_listener = None
 
     async def get_readings(self) -> AsyncGenerator:
         """Yield sensor readings as they arrive."""
@@ -64,7 +65,8 @@ class SensorMonitor:
     async def shutdown(self):
         """Clean shutdown of all services."""
         if self.mqtt_listener:
-            await self.mqtt_listener.disconnect()
+            await self.mqtt_listener.stop()
+            self.mqtt_listener = None
         logger.info("Sensor Monitoring System stopped")
 
     async def run(self):
