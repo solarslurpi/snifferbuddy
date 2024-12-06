@@ -1,0 +1,7 @@
+mqtt:
+  host: "beanie.local"
+  port: 1883
+  readings_topic: "tele/snifferbuddy/#"
+  lwt_topic: "tele/snifferbuddy/+/+/LWT"
+  light_threshold: 500
+database_path: "~/.sensor_monitor/readings.db"
