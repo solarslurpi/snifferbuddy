@@ -108,7 +108,7 @@ class MQTTListener:
             logger.error(f"Failed to connect to MQTT broker: {str(e)}")
             raise
 
-    async def disconnect(self):
+    async def stop(self):
         """Disconnect from the MQTT broker and stop the network loop."""
         if self.client:
             self.client.loop_stop()  # Stop the background thread
