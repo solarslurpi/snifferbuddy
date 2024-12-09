@@ -13,6 +13,16 @@ dependencies = [
     "pydantic"
 ]
 
+# Optional dependencies for scripts/notebooks
+[project.optional-dependencies]
+notebooks = [
+    "mcp-server-sqlite",
+    "marimo"
+]
+
+[project.scripts]
+mcp-server-sqlite = "mcp_server_sqlite.__main__:main"
+
 [tool.setuptools]
 package-dir = {"" = "."}
 packages = {find = {where = [".", "src"], exclude = ["tests*"]}}

@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import sqlite3
 import logging
+import math
 
 from config import AppConfig
 from anyio.streams.memory import MemoryObjectReceiveStream
@@ -41,11 +42,24 @@ class SensorDatabase:
                         temperature REAL,
                         humidity REAL,
                         dew_point REAL,
-                        temp_unit TEXT
+                        temp_unit TEXT,
+                        vpd REAL
                     )
                 ''')
         except sqlite3.Error as e:
             logger.error(f"Error creating table: {e}")
+
+    def _calculate_vpd(self, temperature: float, humidity: float) -> float:
+        """Calculate Vapor Pressure Deficit (VPD) in kPa."""
+        def saturation_vapor_pressure(temp_celsius: float) -> float:
+            return 0.6108 * math.exp((17.27 * temp_celsius) / (temp_celsius + 237.3))
+        
+        air_temp = temperature
+        leaf_temp = air_temp - 2  # Assume leaf temp is 2°C cooler than air
+        svp_air = saturation_vapor_pressure(air_temp)
+        svp_leaf = saturation_vapor_pressure(leaf_temp)
+        actual_vapor_pressure = humidity * svp_air / 100
+        return svp_leaf - actual_vapor_pressure
 
     async def run(self):
         """Continuously read from the receive stream and store readings."""
@@ -84,23 +98,29 @@ class SensorDatabase:
             light_on = 1 if light_value > self.light_threshold else 0
             logger.debug(f"Light reading: A0={light_value}, converted to light_on={light_on}")
 
+            # Calculate VPD before storing
+            temperature = scd40_data.get('Temperature')
+            humidity = scd40_data.get('Humidity')
+            vpd = self._calculate_vpd(temperature, humidity) if temperature is not None and humidity is not None else None
+            
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute(
                     """
                     INSERT INTO SCD4X_SensorReadings
                     (timestamp, light_on, carbon_dioxide, eco2, temperature,
-                    humidity, dew_point, temp_unit)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    humidity, dew_point, temp_unit, vpd)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         time_str,
                         light_on,
                         scd40_data.get('CarbonDioxide'),
                         scd40_data.get('eCO2'),
-                        scd40_data.get('Temperature'),
-                        scd40_data.get('Humidity'),
+                        temperature,
+                        humidity,
                         scd40_data.get('DewPoint'),
-                        data.get('TempUnit')
+                        data.get('TempUnit'),
+                        vpd
                     )
                 )
                 logger.info("Successfully inserted reading into database")

@@ -4,82 +4,10 @@
 ## About
 SnifferBuddy, a puck-shaped device, measures ambient conditions—temperature, humidity, CO2, and light status—in the grow tent using an SCD4x sensor and a photoresistor. It calculates VPD and publishes the data via MQTT.
 
-```{figure} images/SnifferBuddy_mqtt.png
-:align: center
-:height: 350
+This guide details the process of assembling SnifferBuddy, configuring its software, and understanding its operation.  
 
-A SnifferBuddy with an SCD-40 Sensor Sending Readings over MQTT
-```
-## Hardware
-Opening up the SnifferBuddy,
-```{figure} images/snifferbuddy_connected_scd4x.jpeg
-:align: center
-:height: 300
+SnifferBuddy broadcasts MQTT messages packed with SCD-4x sensor data. Node-red, home assistant, and any software tuned to SnifferBuddy's MQTT topic can pick up and utilize this data. 
 
-Inside a SnifferBuddy
-```````
-We see it is made of:
-:::::{grid} 3
-
-::::{grid-item-card} QTPY ESP32-S2
-:img-top: images/qtpy_esp32-s2-icon.jpg
-:img-alt:
-
-[Link to Adafruit](https://www.adafruit.com/product/5325#technical-details)
-
-::::
-
-::::{grid-item-card} SCD4x
-:img-top: images/adafruit_products_SDC41_top.jpg
-
-[Adafruit SCD40](https://www.adafruit.com/product/5187)
-+++
-[Aliexpress SCD4x](https://www.aliexpress.us/item/3256804035401013.html)
-
-
-::::
-::::{grid-item-card} JST SH 4-Pin Cable
-:img-top: https://cdn-shop.adafruit.com/970x728/4399-00.jpg
-
-[Adafruit 50mm](https://www.adafruit.com/product/5187)
-
-::::
-
-:::::
-
-:::::{grid} 3
-
-::::{grid-item-card} Photoresistor
-:img-top: https://m.media-amazon.com/images/I/51T9+GRwcvL._SX342_SY445_.jpg
-
-
-[30 (~ $.20 each)](https://www.amazon.com/eBoot-Photoresistor-Sensitive-Resistor-Dependent/dp/B01N7V536K/ref=sr_1_3?keywords=photoresistor&sr=8-3)
-
-::::
-
-::::{grid-item-card} 12K Resistor
-:img-top: https://m.media-amazon.com/images/I/51YOJThA2CL._SL1300_.jpg
-
-[Pack of 100](https://www.amazon.com/EDGELEC-Resistor-Tolerance-Resistance-Optional/dp/B07HDGQRSR/ref=sr_1_1_sspa?keywords=12k%2Bresistor&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1)
-
-
-::::
-::::{grid-item-card} Silicon Cable
-:img-top: https://m.media-amazon.com/images/I/61-4JvwAQ0L._AC_SY450_.jpg
-
-[30 AWG Silicon Wire](https://amzn.to/3LHvDw0)
-
-::::
-
-:::::
-
-This guide details the process of assembling SnifferBuddy, configuring its software, and understanding its operation.  See [Store Readings](store_readings.md) to see how SnifferBuddies' data can then be used.
-
-SnifferBuddy broadcasts MQTT messages packed with SCD-4x sensor data. Node-red, home assistant, and any software tuned to SnifferBuddy's MQTT topic can pick up and utilize this data. Additionally, another GrowBuddies device - Gus, a Raspberry Pi server, can archive SnifferBuddy data in an influx db while optionally controlling VPD and CO2 levels.
-Here is an example payload:
-```
-{"scd40": {"vpd": 1.43, "temperature": 78.314, "name": "sunshine", "light": "OFF", "co2": 929, "humidity": 45.5017, "unit": "F", "version": 0.1}}
-```
 ## Glossary
 - **MQTT (Message Queuing Telemetry Transport)**: A lightweight messaging protocol used for sending and receiving telemetry data in the form of messages between devices, servers, and applications. MQTT is especially useful in scenarios where network bandwidth is at a premium.
 - **SCD-4x**: This refers to a series of CO2 sensors from Sensirion, specifically the SCD-40 and SCD-41 models. These sensors are integrated into breakout boards developed and sold by Adafruit. The breakout boards make it easier to interface with and use the sensors in projects. The Adafruit product pages for the [SCD-40](https://www.adafruit.com/product/5187) and [SCD-41](https://www.adafruit.com/product/5190) provide further details. SnifferBuddy uses this breakout board.
