@@ -5,7 +5,7 @@ from importlib.resources import files
 
 def logger_setup(name: str) -> logging.Logger:
     # Load logging configuration from YAML file
-    config_path = files(__name__).joinpath('logging_config.yaml')
+    config_path = files("src").joinpath('logging_config.yaml')
     with open('logging_config.yaml', 'r') as f:
         config = yaml.safe_load(f)
 
