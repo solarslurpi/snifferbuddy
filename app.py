@@ -1,102 +1,52 @@
-"""Main application that connects MQTT listener with database storage."""
 import logging
-from contextlib import asynccontextmanager
-import anyio
-from typing import  AsyncGenerator
-from anyio import Event
+import signal
+import argparse
+from pathlib import Path
+from src.appconfig import AppConfig
+from src.listener_code import SensorListener
+from src.logger_setup import logger_setup
+
+logger = logger_setup(__name__)
+logger.setLevel(logging.DEBUG)
+
+# Get the user's home directory
+home_directory = Path.home()
+# Construct the project directory path
+project_dir = home_directory / "Documents" / "Projects" / "snifferbuddy"
 
 
-from config import AppConfig
-from src.mqtt_code import MQTTListener
-from src.database_code import SensorDatabase
-from src.logging_config import setup_logging
+mqtt_client = None
 
-setup_logging()
-logger = logging.getLogger(__name__)
+def store_readings():
+    app_config = AppConfig.from_yaml(project_dir / 'config.yaml')
+    sensor_readings_client = SensorListener(app_config, _store_reading)
+    logger.info("Starting listing for sensor readings...")
+    mqtt_client.start()
 
-class SensorMonitor:
-    def __init__(self):
-        self.config = AppConfig.from_yaml('config.yaml')
-        # Create the stream pair that connects MQTT to Database
-        self.send_stream, self.receive_stream = anyio.create_memory_object_stream(100)
-        self._latest_reading = None
-        self._reading_event = Event()
-        self.mqtt_listener = None
+def stop_storing_readings():
+    if mqtt_client:
+        mqtt_client.stop()
+        mqtt_client = None
+        logger.info("Stopping MQTT client...")
+    else:
+        logger.warn("MQTT client is not running.")
 
-    async def get_readings(self) -> AsyncGenerator:
-        """Yield sensor readings as they arrive."""
-        while True:
-            await self._reading_event.wait()
-            yield self._latest_reading
-            self._reading_event = Event()
+def _store_reading(reading):
+    database.store_reading(reading)
 
-    async def handle_message(self, message):
-        """Process incoming MQTT messages and store them in the database."""
-        try:
-            # Handle LWT (Last Will and Testament) messages
-            if message.topic.endswith('/LWT'):
-                logger.debug(f"Device status change: {message.topic} - {message.payload}")
-                return
 
-            data = await self.mqtt_listener.parse_message(message)
-            if data:
-                await self.db.store_reading(data)
-                # Update latest reading and notify waiters
-                self._latest_reading = data
-                self._reading_event.set()
-                logger.debug(f"Successfully stored reading from {message.topic}")
-            else:
-                logger.warning(f"Received invalid data on topic {message.topic}")
+def main():
+    parser = argparse.ArgumentParser(description="Control the MQTT client.")
+    parser.add_argument('--start', action='store_true', help='Start the MQTT client')
+    parser.add_argument('--stop', action='store_true', help='Stop the MQTT client')
+    args = parser.parse_args()
 
-        except Exception as e:
-            logger.error(f"Error processing message: {e}", exc_info=True)
-
-    @asynccontextmanager
-    async def lifespan(self):
-        """Manage application lifecycle."""
-        try:
-            # Initialize components with their respective stream ends
-            self.db = SensorDatabase(self.config,receive_stream=self.receive_stream)
-            self.mqtt_listener = MQTTListener(self.config, send_stream=self.send_stream)
-            yield self
-        finally:
-            await self.shutdown()
-
-    async def shutdown(self):
-        """Clean shutdown of all services."""
-        if self.mqtt_listener:
-            await self.mqtt_listener.stop()
-            self.mqtt_listener = None
-        logger.info("Sensor Monitoring System stopped")
-
-    async def run(self):
-        """Main application run loop."""
-        logger.debug("Starting application run loop")
-        async with anyio.create_task_group() as tg:
-            # Spawn MQTT listener
-            logger.debug("Starting MQTT listener task")
-            tg.start_soon(self.mqtt_listener.run)
-            logger.info("MQTT listener initialized and connected")
-
-            # Start the database run loop
-            logger.debug("Starting database processor task")
-            tg.start_soon(self.db.run)
-            logger.info("Database processor started")
-
-            try:
-                while True:
-                    await anyio.sleep(1)
-            except KeyboardInterrupt:
-                logger.info("Received interrupt")
-
-async def main():
-    """Application entry point."""
-    monitor = SensorMonitor()
-    try:
-        async with monitor.lifespan() as monitor:
-            await monitor.run()
-    except KeyboardInterrupt:
-        logger.info("Shutting down...")
+    if args.start:
+        store_readings()
+    elif args.stop:
+        stop_storing_readings()
+    else:
+        logger.error("Please specify either --start or --stop.")
 
 if __name__ == "__main__":
-    anyio.run(main)
+    main()

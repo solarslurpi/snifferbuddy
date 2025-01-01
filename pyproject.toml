@@ -10,7 +10,8 @@ dependencies = [
     "python-dotenv",
     "anyio",
     "PyYAML",
-    "pydantic"
+    "pydantic",
+    "duckdb"
 ]
 
 [tool.setuptools]
