@@ -2,7 +2,7 @@ import pytest
 from pathlib import Path
 
 from src.appconfig import AppConfig
-
+from src.database_code import SensorDatabase
 @pytest.fixture
 def config():
     # Get the user's home directory
@@ -13,3 +13,7 @@ def config():
     # Don't use the project's db, use a test db
     config.database_path = project_dir / 'tests/test_db.duckdb'
     return config
+
+@pytest.fixture
+def db(config):
+    return SensorDatabase(config)

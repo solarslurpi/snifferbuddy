@@ -16,3 +16,6 @@ dependencies = [
 where = ["."]
 include = ["snifferbuddy*"]
 exclude = ["tests*"]
+
+[project.scripts]
+snifferbuddy = "app:main"

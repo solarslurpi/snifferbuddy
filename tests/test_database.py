@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 import duckdb
 
-from src.database_code import SCD4XSensorReading, SensorDatabase
+from src.database_code import SCD4XSensorReading
 
 # python -m pytest -s tests/test_database.py
 
@@ -22,8 +22,7 @@ def reading():
         temp_unit="F"
     )
 
-def test_insert(config, reading):
-    db = SensorDatabase(config)
+def test_insert(config, reading, db):
     db.store_reading(reading)
     
     # Get the last reading from DuckDB
