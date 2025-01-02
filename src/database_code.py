@@ -31,7 +31,7 @@ class SensorDatabase:
         
         # Create all parent directories
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        
+        self.logger.debug(f"***---> Database path is: {self.db_path} <----***")
         self._create_table_if_not_exists()
         self.logger.debug(f"Initializing Sensor Database. Database path is: {self.db_path}")
 
