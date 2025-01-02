@@ -27,8 +27,7 @@ class SensorDatabase:
     def __init__(self, config: AppConfig):
         self.logger = setup_logging(__name__)
         """Initialize the database connection."""
-        self.db_path = Path(config.get('database_path'))  # Convert to Path object
-        
+        self.db_path = Path(config.get('database_path')).resolve() 
         # Create all parent directories
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.logger.debug(f"***---> Database path is: {self.db_path} <----***")
