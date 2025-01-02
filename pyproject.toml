@@ -15,7 +15,16 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["src*"]
-exclude = ["tests*"]
+exclude = [
+    "tests*",
+    "docs*",
+    "enclosures*",
+    "examples*",
+    "logs*",
+    "build*",
+    "dist*",
+    "*.egg-info",
+]
 
 [project.scripts]
 snifferbuddy = "src.app:main"
