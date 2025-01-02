@@ -1,0 +1,10 @@
+[Unit]
+Description=Listen for MQTT messages from SnifferBuddies and store in DuckDB
+After=mosquitto.service
+
+[Service]
+Type=idle
+ExecStart=snifferbuddy
+Restart=always
+[Install]
+WantedBy=multi-user.target

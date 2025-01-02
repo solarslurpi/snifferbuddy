@@ -23,6 +23,7 @@ exclude = [
     "logs*",
     "build*",
     "dist*",
+    "*.service",
     "*.egg-info",
 ]
 
