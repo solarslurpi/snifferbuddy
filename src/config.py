@@ -1,10 +1,13 @@
 from pathlib import Path
 
-# Store database in a data directory within the package
-package_dir = Path(__file__).parent
-data_dir = package_dir / "data"
-db_path = data_dir / "sniffer_data.duckdb"
-db_path.parent.mkdir(parents=True, exist_ok=True)
+# Create a directory in the user's home directory
+home_dir = Path.home()
+app_dir = home_dir / ".snifferbuddy"  # Hidden directory in user's home
+data_dir = app_dir / "data"
+db_path = home_dir / "snifferbuddy/sniffer_data.duckdb"
+
+# Create directories if they don't exist
+data_dir.mkdir(parents=True, exist_ok=True)
 
 CONFIG = {
     'mqtt': {
