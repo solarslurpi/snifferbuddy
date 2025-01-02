@@ -10,7 +10,6 @@ dependencies = [
     "pydantic",
     "duckdb",
     "pyyaml",
-    "appdirs",
 ]
 
 [tool.setuptools.packages.find]
@@ -29,10 +28,3 @@ exclude = [
 
 [project.scripts]
 snifferbuddy = "src.app:main"
-
-[tool.setuptools]
-package-dir = {"" = "."}
-packages = ["src"]
-
-[tool.setuptools.package-data]
-src = ["*.yaml"]
