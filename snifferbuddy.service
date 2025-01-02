@@ -4,7 +4,7 @@ After=mosquitto.service
 
 [Service]
 Type=idle
-ExecStart=snifferbuddy
+ExecStart=/home/pi/.local/bin/snifferbuddy
 Restart=always
 [Install]
 WantedBy=multi-user.target
