@@ -1,0 +1,7 @@
+mqtt:
+  host: "beanie.local"
+  port: 1883
+  readings_topic: "tele/snifferbuddy/+/+/SENSOR"
+  lwt_topic: "tele/snifferbuddy/+/+/LWT"
+  light_threshold: 500
+database_path: "~/Documents/Projects/snifferbuddy/data/sniffer_data.duckdb"

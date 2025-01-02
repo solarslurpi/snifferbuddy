@@ -1,19 +1,16 @@
 import json
-import logging
 import math
 from datetime import datetime
 import paho.mqtt.client as mqtt
-from src.appconfig import AppConfig
 from src.database_code import SCD4XSensorReading
-from src.logger_setup import logger_setup
+from src.common import setup_logging
 
 
 
 class SensorListener:
     def __init__(self, config, callback=None):
         self.config = config
-        self.logger = logger_setup(__name__)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger = setup_logging(__name__)
         # Use a callback to send the reading to the caller
         self.callback = callback 
 

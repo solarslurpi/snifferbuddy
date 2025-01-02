@@ -2,7 +2,6 @@
 """
 import os
 from pathlib import Path
-import logging
 from datetime import datetime
 from typing import Literal
 
@@ -10,7 +9,7 @@ import duckdb
 from pydantic import BaseModel, Field
 
 from src.appconfig import AppConfig
-from src.logger_setup import logger_setup
+from src.common import setup_logging
 
 
 class SCD4XSensorReading(BaseModel):
@@ -26,8 +25,7 @@ class SCD4XSensorReading(BaseModel):
 
 class SensorDatabase:
     def __init__(self, config: AppConfig):
-        self.logger = logger_setup(__name__)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger = setup_logging(__name__)
         """Initialize the database connection."""
         self.db_path = config.database_path
         # Extract the directory path without the filename

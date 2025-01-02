@@ -1,22 +1,17 @@
-import logging
+
 from pathlib import Path
 from src.appconfig import AppConfig
 from src.listener_code import SensorListener
 from src.database_code import SensorDatabase
-from src.logger_setup import logger_setup
+from src.common import setup_logging
 
-logger = logger_setup(__name__)
-logger.setLevel(logging.DEBUG)
-
-# Get the user's home directory
-home_directory = Path.home()
-# Construct the project directory path
-project_dir = home_directory / "Documents" / "Projects" / "snifferbuddy"
+logger = setup_logging(__name__)
 
 db = None
 
 def store_readings():
-    app_config = AppConfig.from_yaml(project_dir / 'config.yaml')
+    current_dir = Path(__file__).parent
+    app_config = AppConfig.from_yaml(current_dir / 'config.yaml')
     global db
     db = SensorDatabase(app_config)
     listener = SensorListener(app_config, _store_reading)
@@ -29,7 +24,6 @@ def _store_reading(reading):
 
 
 def main():
-
     store_readings()
 
 if __name__ == "__main__":
