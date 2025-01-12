@@ -1,4 +1,8 @@
 # SnifferBuddy
+<p align="center">
+  <img src="docs/images/snifferbuddy_env_drawing.png" width="300" alt="Snifferbuddy in grow environment">
+</p>
+
 
 ## About
 
