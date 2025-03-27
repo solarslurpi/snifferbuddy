@@ -1,5 +1,5 @@
 [Unit]
-Description=Listen for MQTT messages from SnifferBuddies and store in DuckDB
+Description=Listen for MQTT messages from SnifferBuddies and store in SQLite
 After=mosquitto.service
 
 [Service]

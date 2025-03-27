@@ -75,7 +75,8 @@ class SensorDatabase:
                         sensor_reading.temp_unit
                     )
                 )
-                self.logger.info("Successfully inserted reading into database")
+                # Log the absolute path to the database file
+                self.logger.info(f"Successfully inserted reading into database at: {self.db_path.absolute()}")
 
         except sqlite3.Error as e:
             self.logger.error(f"Database error: {e}")
