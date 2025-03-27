@@ -137,3 +137,15 @@ pipx installs applications in isolated environments:
 - Virtual environments: `~/.local/pipx/venvs/snifferbuddy/`
 - Executable links: `~/.local/bin/`
 
+## Viewing the data using DB Browser on Windows
+
+I like the simplicity of DB Browser on Windows for viewing SQLite data.  The challenge is it assumes the Windows File system.  If you are running on a Linux device:
+- use [`sshfs-win`](https://github.com/winfsp/sshfs-win). 
+- Install with `winget install SSHFS-Win.SSHFS-Win`. 
+- Open Windows Explorer and use the following syntax:
+```
+\\sshfs\pi@<hostname>
+```
+The first time you try to access the Linux device, you will need to enter credentials.
+
+Now you can open DB Browser and navigate to the sqlite file which is in the `data` directory.
