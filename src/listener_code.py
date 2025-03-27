@@ -17,7 +17,7 @@ class SensorListener:
 
     def on_connect(self, client, userdata, flags, rc, properties=None):  
         self.logger.info("Connected with result code {0}".format(str(rc)))  
-        self.client.subscribe(self.config.get('mqtt').get('readings_topic') )
+        self.client.subscribe(self.config.mqtt.readings_topic )
 
     def on_message(self, client, userdata, msg):
         if msg.topic.endswith('/SENSOR'):
@@ -28,8 +28,8 @@ class SensorListener:
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
-        host = self.config.get('mqtt').get('host')
-        port = self.config.get('mqtt').get('port')
+        host = self.config.mqtt.host
+        port = self.config.mqtt.port
         self.client.connect(host, port, 60)
         self.logger.info(f"Connecting to {host} on port {port}")
         self.client.loop_forever()
@@ -58,7 +58,7 @@ class SensorListener:
         # Convert analog reading to light state
         analog_data = data.get('ANALOG', {})
         a0_value = analog_data.get('A0', 0) 
-        light_on = 1 if a0_value > self.config.get('mqtt').get('light_threshold') else 0
+        light_on = 1 if a0_value > self.config.mqtt.light_threshold else 0
         
         reading_to_store = SCD4XSensorReading(
             timestamp=timestamp,

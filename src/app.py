@@ -1,11 +1,14 @@
-
+from pathlib import Path
 from src.appconfig import AppConfig
 from src.listener_code import SensorListener
 from src.database_code import SensorDatabase
 from src.common import setup_logging
-from src.config import CONFIG
 
 logger = setup_logging(__name__)
+
+# Load configuration
+config_path = Path(__file__).parent / "config.yaml"
+CONFIG = AppConfig.from_yaml(config_path)
 
 db = None
 

@@ -3,15 +3,14 @@ from pathlib import Path
 
 from src.appconfig import AppConfig
 from src.database_code import SensorDatabase
+
 @pytest.fixture
 def config():
-    # Get the user's home directory
-    home_directory = Path.home()
-    # Construct the project directory path
-    project_dir = home_directory / "Documents" / "Projects" / "snifferbuddy"
-    config = AppConfig.from_yaml(project_dir / 'config.yaml')
+    # Use the same path resolution as app.py to find config.yaml in src/
+    src_dir = Path(__file__).parent.parent / "src"
+    config = AppConfig.from_yaml(src_dir / 'config.yaml')
     # Don't use the project's db, use a test db
-    config.database_path = project_dir / 'tests/test_db.duckdb'
+    config.database_path = Path(__file__).parent / 'test_db.sqlite3'
     return config
 
 @pytest.fixture

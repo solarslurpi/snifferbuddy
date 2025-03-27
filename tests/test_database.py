@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-import duckdb
+import sqlite3
 
 from src.database_code import SCD4XSensorReading
 
@@ -25,32 +25,27 @@ def reading():
 def test_insert(config, reading, db):
     db.store_reading(reading)
     
-    # Get the last reading from DuckDB
-    with duckdb.connect(config.database_path) as conn:
+    with sqlite3.connect(config.database_path) as conn:
         result = conn.execute("""
             SELECT * FROM readings 
             ORDER BY timestamp DESC 
             LIMIT 1
         """).fetchone()
-        # Get column names
-        columns = conn.execute("""
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_name='readings'
-        """).fetchall()
-        column_names = [col[0] for col in columns]
+        
+        columns = conn.execute("PRAGMA table_info(readings)").fetchall()
+        column_names = [col[1] for col in columns]
         result_dict = dict(zip(column_names, result))
 
-    # Verify each field matches the input
-    assert result_dict.get('timestamp') == reading.timestamp
-    assert result_dict.get('device_name') == reading.device_name
-    assert result_dict.get('light_on') == reading.light_on
-    assert result_dict.get('CO2') == reading.CO2
-    assert round(result_dict.get('temperature'),1) == reading.temperature
-    assert round(result_dict.get('humidity'),1) == reading.humidity
-    assert round(result_dict.get('vpd'),1) == reading.vpd
-    assert round(result_dict.get('dew_point'),1) == reading.dew_point
-    assert result_dict.get('temp_unit') == reading.temp_unit
+    # Compare with the same format as SQLite uses
+    assert result_dict['timestamp'] == reading.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    assert result_dict['device_name'] == reading.device_name
+    assert result_dict['light_on'] == reading.light_on
+    assert result_dict['CO2'] == reading.CO2
+    assert round(result_dict['temperature'], 1) == reading.temperature
+    assert round(result_dict['humidity'], 1) == reading.humidity
+    assert round(result_dict['vpd'], 1) == reading.vpd
+    assert round(result_dict['dew_point'], 1) == reading.dew_point
+    assert result_dict['temp_unit'] == reading.temp_unit
 
     # Print the received data for inspection
     print("\nReceived and stored sensor data:")

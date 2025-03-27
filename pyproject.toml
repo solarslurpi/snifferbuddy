@@ -8,7 +8,7 @@ version = "0.0.1"
 dependencies = [
     "paho-mqtt",
     "pydantic",
-    "duckdb",
+    "pytest>=8.3.5",
     "pyyaml",
 ]
 

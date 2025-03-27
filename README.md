@@ -10,7 +10,7 @@ SnifferBuddy is a puck-shaped device designed for indoor grow environments, moni
   <img src="docs/images/SnifferBuddy_mqtt.png" width="300" alt="Snifferbuddy in grow environment">
 </p>
 
-The readings are transmitted via `MQTT`, enabling seamless integration with workflows such as Node-RED, Home Assistant, or custom applications. This package includes support for storing readings in a local DuckDB database for data analysis and post-processing. A [GrowBase](https://github.com/solarslurpi/GrowBase) is needed to store the data.
+The readings are transmitted via `MQTT`, enabling seamless integration with workflows such as Node-RED, Home Assistant, or custom applications. This package includes support for storing readings in a local SQLite database for data analysis and post-processing. 
 
 The system operates entirely on your local Wi-Fi network, ensuring no data is sent to the Internet.
 
