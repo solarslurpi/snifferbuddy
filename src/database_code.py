@@ -3,6 +3,7 @@
 from pathlib import Path
 from datetime import datetime
 from typing import Literal
+import os
 
 import sqlite3
 from pydantic import BaseModel
@@ -14,6 +15,7 @@ from src.common import setup_logging
 class SCD4XSensorReading(BaseModel):
     timestamp: datetime
     device_name: str
+    tent_name: str
     light_on: bool
     CO2: int
     temperature: float
@@ -26,7 +28,16 @@ class SensorDatabase:
     def __init__(self, config: AppConfig):
         self.logger = setup_logging(__name__)
         """Initialize the database connection."""
-        self.db_path = Path(config.database_path).expanduser().resolve() 
+        
+        # Determine platform and choose appropriate path
+        if os.name == 'nt':  # Windows
+            db_path_str = config.database_paths.windows
+        else:  # Linux/macOS
+            db_path_str = config.database_paths.linux
+            
+        # Resolve the path
+        self.db_path = Path(db_path_str).expanduser().resolve()
+        
         # Create all parent directories
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._create_table_if_not_exists()
@@ -37,18 +48,18 @@ class SensorDatabase:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute('''
-                            CREATE TABLE IF NOT EXISTS readings (
-                                timestamp TIMESTAMP PRIMARY KEY,
-                                device_name TEXT,
-                                light_on INTEGER,
-                                CO2 INTEGER,
-                                temperature REAL,
-                                humidity REAL,
-                                vpd REAL,
-                                dew_point REAL,
-                                temp_unit TEXT
-                            )
-
+                    CREATE TABLE IF NOT EXISTS readings (
+                        timestamp TIMESTAMP PRIMARY KEY,
+                        device_name TEXT,
+                        tent_name TEXT,
+                        light_on INTEGER,
+                        CO2 INTEGER,
+                        temperature REAL,
+                        humidity REAL,
+                        vpd REAL,
+                        dew_point REAL,
+                        temp_unit TEXT
+                    )
                 ''')
         except sqlite3.Error as e:
             self.logger.error(f"Error creating table: {e}")
@@ -60,12 +71,13 @@ class SensorDatabase:
                 conn.execute(
                     """
                     INSERT INTO readings
-                    (timestamp,device_name,light_on,CO2,temperature,humidity,vpd,dew_point,temp_unit)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    (timestamp,device_name,tent_name,light_on,CO2,temperature,humidity,vpd,dew_point,temp_unit)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
                         sensor_reading.timestamp.strftime('%Y-%m-%d %H:%M:%S'),  # Format to match SQLite
                         sensor_reading.device_name,
+                        sensor_reading.tent_name,
                         sensor_reading.light_on,
                         sensor_reading.CO2,
                         sensor_reading.temperature,

@@ -13,6 +13,7 @@ def reading():
     return SCD4XSensorReading(
         timestamp=current_time,
         device_name="test_device",
+        tent_name="test_tent",
         light_on=1,
         CO2=547,
         temperature=74.3,
@@ -25,6 +26,7 @@ def reading():
 def test_insert(config, reading, db):
     db.store_reading(reading)
     
+    # Get the last reading from SQLite
     with sqlite3.connect(config.database_path) as conn:
         result = conn.execute("""
             SELECT * FROM readings 
@@ -36,7 +38,10 @@ def test_insert(config, reading, db):
         column_names = [col[1] for col in columns]
         result_dict = dict(zip(column_names, result))
 
-    # Compare with the same format as SQLite uses
+    # Convert SQLite integer back to boolean for light_on
+    result_dict['light_on'] = bool(result_dict['light_on'])
+
+    # Compare with the correct format (space instead of 'T')
     assert result_dict['timestamp'] == reading.timestamp.strftime('%Y-%m-%d %H:%M:%S')
     assert result_dict['device_name'] == reading.device_name
     assert result_dict['light_on'] == reading.light_on
@@ -54,3 +59,26 @@ def test_insert(config, reading, db):
             print(f"  {key}: {round(value, 1)}")
         else:
             print(f"  {key}: {value}")
+
+def test_fields_exist_in_db(db):
+    """Test that all required fields exist in the readings table."""
+    with sqlite3.connect(db.db_path) as conn:
+        columns = conn.execute("PRAGMA table_info(readings)").fetchall()
+        column_names = [col[1] for col in columns]
+        
+    # Check that all required fields exist
+    required_fields = [
+        'timestamp', 
+        'device_name',
+        'tent_name',  # Our new field
+        'light_on', 
+        'CO2', 
+        'temperature', 
+        'humidity', 
+        'vpd', 
+        'dew_point', 
+        'temp_unit'
+    ]
+    
+    for field in required_fields:
+        assert field in column_names, f"Field '{field}' not found in database schema"

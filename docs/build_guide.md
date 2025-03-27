@@ -1,5 +1,8 @@
 # Build Guide
 
+Before putting all the hardware pieces together, I like to first get Tasmota installed on the ESP286.  Follow the steps in the [Firmware Guide](firmware_guide.md) up to the step involving`i2cdriver`.  The `SCD4x` has not been connected yet.
+
+
 The steps to build a SnifferBuddy include:
 1. Get the parts
 2. Print out the enclosure

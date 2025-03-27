@@ -4,4 +4,6 @@ mqtt:
   readings_topic: "tele/snifferbuddy/+/+/SENSOR"
   lwt_topic: "tele/snifferbuddy/+/+/LWT"
   light_threshold: 500
-database_path: "./data/sniffer_data.sqlite"
+database_paths:
+  linux: "~/data/sniffer_data.sqlite"
+  windows: "./data/sniffer_data.sqlite"

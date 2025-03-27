@@ -43,7 +43,13 @@ class SensorListener:
         self.running = False
 
     def _process_message(self, msg:str) -> SCD4XSensorReading:
-        device_name = msg.topic.split('/')[3]
+         # Parse topic parts from "tele/snifferbuddy/<location>/<name>/SENSOR"
+        topic_parts = msg.topic.split('/')
+        # Extract location (tent_name) from the topic
+        tent_name = topic_parts[2] if len(topic_parts) > 2 else "unknown"
+        # Extract device name from the topic
+        device_name = topic_parts[3] if len(topic_parts) > 3 else "unknown"
+        
         data = json.loads(msg.payload)
         # Extract values from the data
         time_str = data.get('Time')
@@ -63,6 +69,7 @@ class SensorListener:
         reading_to_store = SCD4XSensorReading(
             timestamp=timestamp,
             device_name=device_name,
+            tent_name=tent_name,
             light_on=light_on,
             CO2=scd40_data.get('CarbonDioxide'),
             temperature=temperature,

@@ -41,8 +41,9 @@ To install the template,
 
 Next, we will use the `template` action to set the mqtt host, mqtt topic, whether to display temperatures in Fahrenheit or Celsius (so8 1 = Fahrenheit, 0 = Celsius)
 
+
 ```
-template {"CMND":"mqtthost beanie.local|topic snifferbuddy/tent_one/moon_beam|so8 1|teleperiod 20"}
+template {"CMND":"mqtthost <YOUR HOST NAME>|topic snifferbuddy/<TENT ID>/<SNIFFERBUDDY NAME>|so8 1|teleperiod 20"}
 ```
 - 
 - `[SetOption8](https://tasmota.github.io/docs/Commands/#setoptions) 1` is to get readings into Fahrenheit.  By default, the readings are in Celsius.
