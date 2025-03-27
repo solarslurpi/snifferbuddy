@@ -27,5 +27,8 @@ exclude = [
     "*.egg-info",
 ]
 
+[tool.setuptools.package-data]
+"src" = ["config.yaml"]
+
 [project.scripts]
 snifferbuddy = "src.app:main"

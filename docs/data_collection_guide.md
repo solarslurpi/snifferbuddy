@@ -117,6 +117,20 @@ sudo journalctl -u snifferbuddy -f
 ```
 The -f flag (follow) displays live log entries as they occur. Press Ctrl+C to exit the real-time monitoring view.
 
+5. Stop the service
+To stop the service:
+```
+sudo systemctl stop snifferbuddy
+```
+
+6. After updating snifferbuddy
+```
+sudo systemctl stop snifferbuddy
+sudo systemctl daemon-reload
+sudo systemctl start snifferbuddy
+```
+
+
 ## Installation Location
 
 pipx installs applications in isolated environments:
